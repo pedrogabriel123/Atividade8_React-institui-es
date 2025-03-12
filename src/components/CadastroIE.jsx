@@ -72,7 +72,7 @@ const CadastroIE = ({ show, handleClose, refreshData }) => {
 
                     <Form.Group controlId="NO_MESORREGIAO" className="mt-2">
                         <Form.Label>Mesorregião</Form.Label>
-                        <Form.Control type="text" {...register("NO_MOSORREGIAO")} />
+                        <Form.Control type="text" {...register("NO_MESORREGIAO")} />
                         {errors.NO_MESORREGIAO && <p className="text-danger">{errors.NO_MESORREGIAO.message}</p>}
                     </Form.Group>
 
