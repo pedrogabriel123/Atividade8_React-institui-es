@@ -1,13 +1,11 @@
 import { Carousel, Container } from 'react-bootstrap';
-import '../styles/Home.css'; // Importando arquivo de estilos
+import '../styles/Home.css';
 
-// Importando imagens locais
 import img1 from '../assets/escola1.jpeg';
 import img2 from '../assets/escola2.jpeg';
 import img3 from '../assets/escola3.jpeg';
 
 const Home = () => {
-  // Lista de imagens locais
   const imagens = [img1, img2, img3];
 
   return (
@@ -15,7 +13,7 @@ const Home = () => {
       <h1 className="text-center mt-4">Bem-vindo à Plataforma de Instituições de Ensino</h1>
       <p className="text-center">Aqui você pode explorar e cadastrar instituições de ensino com facilidade.</p>
 
-      {/* 🔹 Carrossel com imagens estilizadas */}
+      {/*Carrossel com imagens estilizadas */}
       <Carousel className="mt-4 custom-carousel">
         {imagens.map((img, index) => (
           <Carousel.Item key={index}>
