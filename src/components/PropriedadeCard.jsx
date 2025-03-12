@@ -1,31 +1,31 @@
-import { Button, Card, Col } from 'react-bootstrap';
+import { Card, Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
-const PropriedadeCard = ({ imagem, nome, descricao }) => {
-  const detalharHandleClick = (event) => {
-    console.log('Clicou');
-  };
-
+const PropriedadeCard = ({ data, onDetalhar }) => {
   return (
-    <Col>
-      <Card>
-        <Card.Img variant="top" src={imagem} />
-        <Card.Body>
-          <Card.Title>{nome}</Card.Title>
-          <Card.Text>{descricao}</Card.Text>
-          <Button onClick={detalharHandleClick} variant="primary">
-            Detalhar
-          </Button>
-        </Card.Body>
-      </Card>
-    </Col>
+    <Card style={{ width: '18rem', margin: '10px' }}>
+      <Card.Body>
+        <Card.Title>{data.NO_ENTIDADE}</Card.Title>
+        <Card.Text>
+          <strong>Município:</strong> {data.NO_MUNICIPIO} <br />
+          <strong>Matrículas:</strong> {data.QT_MAT_BAS || 'Não informado'}
+        </Card.Text>
+        <Button variant="info" onClick={() => onDetalhar(data)}>
+          Detalhar
+        </Button>
+      </Card.Body>
+    </Card>
   );
 };
 
+// Validação de props
 PropriedadeCard.propTypes = {
-  imagem: PropTypes.string,
-  nome: PropTypes.string,
-  descricao: PropTypes.string,
+  data: PropTypes.shape({
+    NO_ENTIDADE: PropTypes.string.isRequired,
+    NO_MUNICIPIO: PropTypes.string.isRequired,
+    QT_MAT_BAS: PropTypes.string,
+  }).isRequired,
+  onDetalhar: PropTypes.func.isRequired,
 };
 
 export default PropriedadeCard;

@@ -1,0 +1,17 @@
+/* Estilização do carrossel */
+.custom-carousel {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* Define um tamanho agradável para as imagens */
+.custom-carousel-image {
+    height: 400px;
+    /* Ajuste a altura conforme necessário */
+    object-fit: contain;
+    /* Mantém a proporção e evita embaçamento */
+    border-radius: 10px;
+    /* Borda arredondada para um efeito mais elegante */
+    background-color: #f0f0f0;
+    /* Fundo neutro para evitar espaços vazios */
+}

@@ -35,4 +35,19 @@ export default [
       ],
     },
   },
+  {
+    files: ['backend/**/*.js'], // Aplica-se a todos arquivos JS no backend
+    languageOptions: {
+      globals: {
+        ...globals.node, // Agora reconhece require, process, etc.
+      },
+      parserOptions: {
+        sourceType: 'commonjs', // Node tradicional usa commonjs
+        ecmaVersion: 'latest',
+      },
+    },
+    rules: {
+      'no-undef': 'off', // Remove erro específico do no-undef
+    },
+  },
 ]

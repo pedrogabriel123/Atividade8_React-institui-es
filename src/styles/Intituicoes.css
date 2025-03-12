@@ -1,0 +1,7 @@
+.full-height {
+    min-height: calc(100vh - 120px);
+    /* Garante que ocupa toda a tela */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
