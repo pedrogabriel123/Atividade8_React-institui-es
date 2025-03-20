@@ -1,106 +1,197 @@
-import { Modal, Button, Form } from 'react-bootstrap';
-import PropTypes from 'prop-types';
-import { toast } from "react-toastify";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import { Modal, Button, Form } from "react-bootstrap";
+import PropTypes from "prop-types";
+import { Formik } from "formik";
+import * as Yup from "yup";
+import { toast, ToastContainer } from "react-toastify";
 
-const schema = yup.object().shape({
-    NO_ENTIDADE: yup.string().required("O nome da instituição é obrigatório."),
-    NO_REGIAO: yup.string().required("A região é obrigatória."),
-    NO_UF: yup.string().required("O estado (UF) é obrigatório."),
-    NO_MUNICIPIO: yup.string().required("O município é obrigatório."),
-    NO_MESORREGIAO: yup.string().required("A mesorregião é obrigatória."),
-    NO_MICRORREGIAO: yup.string().required("A microrregião é obrigatória."),
-    QT_MAT_BAS: yup.number().typeError("Matrículas devem ser um número").required("O número de matrículas é obrigatório."),
+const schema = Yup.object().shape({
+    NO_ENTIDADE: Yup.string().required("O nome da instituição é obrigatório."),
+    NO_REGIAO: Yup.string().required("A região é obrigatória."),
+    NO_UF: Yup.string().required("O estado (UF) é obrigatório."),
+    NO_MUNICIPIO: Yup.string().required("O município é obrigatório."),
+    NO_MESORREGIAO: Yup.string().required("A mesorregião é obrigatória."),
+    NO_MICRORREGIAO: Yup.string().required("A microrregião é obrigatória."),
+    QT_MAT_BAS: Yup.number()
+        .typeError("Matrículas devem ser um número")
+        .required("O número de matrículas é obrigatório."),
 });
 
-
 const CadastroIE = ({ show, handleClose, refreshData }) => {
-    const { register, handleSubmit, formState: { errors } } = useForm({
-        resolver: yupResolver(schema),
-    });
+    const initialValues = {
+        NO_ENTIDADE: "",
+        NO_REGIAO: "",
+        NO_UF: "",
+        NO_MUNICIPIO: "",
+        NO_MESORREGIAO: "",
+        NO_MICRORREGIAO: "",
+        QT_MAT_BAS: "",
+    };
 
-    const onSubmit = async (formData) => {
+    const handleSubmit = async (values, { setSubmitting, resetForm }) => {
         try {
-            const response = await fetch('http://localhost:3000/ies', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+            const response = await fetch("http://localhost:3000/ies", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(values),
             });
 
-            if (!response.ok) throw new Error('Erro ao cadastrar a IE');
+            if (!response.ok) throw new Error("Erro ao cadastrar a IE");
 
             toast.success("Instituição cadastrada com sucesso!");
             refreshData();
             handleClose();
+            resetForm();
         } catch (err) {
+            toast.error("Erro ao cadastrar a instituição.");
             console.error(err);
+        } finally {
+            setSubmitting(false);
         }
     };
 
     return (
-        <Modal show={show} onHide={handleClose}>
-            <Modal.Header closeButton>
-                <Modal.Title>Cadastrar Nova IE</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form onSubmit={handleSubmit(onSubmit)}>
-                    <Form.Group controlId="NO_ENTIDADE">
-                        <Form.Label>Nome da Instituição</Form.Label>
-                        <Form.Control type="text" {...register("NO_ENTIDADE")} />
-                        {errors.NO_ENTIDADE && <p className="text-danger">{errors.NO_ENTIDADE.message}</p>}
-                    </Form.Group>
+        <>
+            <Modal show={show} onHide={handleClose} size="lg">
+                <Modal.Header closeButton>
+                    <Modal.Title>Cadastrar Nova IE</Modal.Title>
+                </Modal.Header>
 
-                    <Form.Group controlId="NO_REGIAO" className="mt-2">
-                        <Form.Label>Região</Form.Label>
-                        <Form.Control type="text" {...register("NO_REGIAO")} />
-                        {errors.NO_REGIAO && <p className="text-danger">{errors.NO_REGIAO.message}</p>}
-                    </Form.Group>
+                <Formik
+                    initialValues={initialValues}
+                    validationSchema={schema}
+                    onSubmit={handleSubmit}
+                >
+                    {({ values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit }) => (
+                        <Form onSubmit={handleSubmit}>
+                            <Modal.Body>
 
-                    <Form.Group controlId="NO_UF" className="mt-2">
-                        <Form.Label>UF</Form.Label>
-                        <Form.Control type="text" {...register("NO_UF")} />
-                        {errors.NO_UF && <p className="text-danger">{errors.NO_UF.message}</p>}
-                    </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Nome da Instituição</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="NO_ENTIDADE"
+                                        value={values.NO_ENTIDADE}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        className={errors.NO_ENTIDADE && touched.NO_ENTIDADE ? "is-invalid" : ""}
+                                    />
+                                    {errors.NO_ENTIDADE && touched.NO_ENTIDADE && (
+                                        <div className="text-danger">{errors.NO_ENTIDADE}</div>
+                                    )}
+                                </Form.Group>
 
-                    <Form.Group controlId="NO_MUNICIPIO" className="mt-2">
-                        <Form.Label>Município</Form.Label>
-                        <Form.Control type="text" {...register("NO_MUNICIPIO")} />
-                        {errors.NO_MUNICIPIO && <p className="text-danger">{errors.NO_MUNICIPIO.message}</p>}
-                    </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Região</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="NO_REGIAO"
+                                        value={values.NO_REGIAO}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        className={errors.NO_REGIAO && touched.NO_REGIAO ? "is-invalid" : ""}
+                                    />
+                                    {errors.NO_REGIAO && touched.NO_REGIAO && (
+                                        <div className="text-danger">{errors.NO_REGIAO}</div>
+                                    )}
+                                </Form.Group>
 
-                    <Form.Group controlId="NO_MESORREGIAO" className="mt-2">
-                        <Form.Label>Mesorregião</Form.Label>
-                        <Form.Control type="text" {...register("NO_MESORREGIAO")} />
-                        {errors.NO_MESORREGIAO && <p className="text-danger">{errors.NO_MESORREGIAO.message}</p>}
-                    </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>UF</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="NO_UF"
+                                        value={values.NO_UF}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        className={errors.NO_UF && touched.NO_UF ? "is-invalid" : ""}
+                                    />
+                                    {errors.NO_UF && touched.NO_UF && (
+                                        <div className="text-danger">{errors.NO_UF}</div>
+                                    )}
+                                </Form.Group>
 
-                    <Form.Group controlId="NO_MICRORREGIAO" className="mt-2">
-                        <Form.Label>Microrregião</Form.Label>
-                        <Form.Control type="text" {...register("NO_MICRORREGIAO")} />
-                        {errors.NO_MICRORREGIAO && <p className="text-danger">{errors.NO_MICRORREGIAO.message}</p>}
-                    </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Município</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="NO_MUNICIPIO"
+                                        value={values.NO_MUNICIPIO}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        className={errors.NO_MUNICIPIO && touched.NO_MUNICIPIO ? "is-invalid" : ""}
+                                    />
+                                    {errors.NO_MUNICIPIO && touched.NO_MUNICIPIO && (
+                                        <div className="text-danger">{errors.NO_MUNICIPIO}</div>
+                                    )}
+                                </Form.Group>
 
-                    <Form.Group controlId="QT_MAT_BAS" className="mt-2">
-                        <Form.Label>Matrículas</Form.Label>
-                        <Form.Control type="text" {...register("QT_MAT_BAS")} />
-                        {errors.QT_MAT_BAS && <p className="text-danger">{errors.QT_MAT_BAS.message}</p>}
-                    </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Mesorregião</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="NO_MESORREGIAO"
+                                        value={values.NO_MESORREGIAO}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        className={errors.NO_MESORREGIAO && touched.NO_MESORREGIAO ? "is-invalid" : ""}
+                                    />
+                                    {errors.NO_MESORREGIAO && touched.NO_MESORREGIAO && (
+                                        <div className="text-danger">{errors.NO_MESORREGIAO}</div>
+                                    )}
+                                </Form.Group>
 
-                    <Button variant="primary" type="submit" className="mt-3">
-                        Cadastrar
-                    </Button>
-                </Form>
-            </Modal.Body>
-        </Modal >
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Microrregião</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="NO_MICRORREGIAO"
+                                        value={values.NO_MICRORREGIAO}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        className={errors.NO_MICRORREGIAO && touched.NO_MICRORREGIAO ? "is-invalid" : ""}
+                                    />
+                                    {errors.NO_MICRORREGIAO && touched.NO_MICRORREGIAO && (
+                                        <div className="text-danger">{errors.NO_MICRORREGIAO}</div>
+                                    )}
+                                </Form.Group>
+
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Matrículas</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        name="QT_MAT_BAS"
+                                        value={values.QT_MAT_BAS}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        className={errors.QT_MAT_BAS && touched.QT_MAT_BAS ? "is-invalid" : ""}
+                                    />
+                                    {errors.QT_MAT_BAS && touched.QT_MAT_BAS && (
+                                        <div className="text-danger">{errors.QT_MAT_BAS}</div>
+                                    )}
+                                </Form.Group>
+                            </Modal.Body>
+
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={handleClose}>
+                                    Fechar
+                                </Button>
+                                <Button variant="primary" type="submit" disabled={isSubmitting}>
+                                    {isSubmitting ? "Enviando..." : "Cadastrar"}
+                                </Button>
+                            </Modal.Footer>
+                        </Form>
+                    )}
+                </Formik>
+            </Modal>
+            <ToastContainer />
+        </>
     );
 };
 
 CadastroIE.propTypes = {
     show: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
-    refreshData: PropTypes.func.isRequired
+    refreshData: PropTypes.func.isRequired,
 };
 
 export default CadastroIE;
